@@ -1,3 +1,6 @@
+"""TPRG Assignment 2 Dustin Horne, Client to connect
+to server
+"""
 import socket
 s = socket.socket()
 host = "192.168.0.14" #Raspberry pi ip server
