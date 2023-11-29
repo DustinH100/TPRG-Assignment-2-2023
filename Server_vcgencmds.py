@@ -1,7 +1,19 @@
+"""TPRG Assignment 2 Dustin Horne, Server to obtain
+internal readings from pi400
+"""
+import signal
+import sys
 import socket
 import os
 import json
 import vcgencmd
+
+def grace_exit(sig, frame):
+    print("Closing the server.")
+    s.close()
+    sys.exit(0)
+    
+signal.signal(signal.SIGINT, grace_exit)
 
 s = socket.socket()
 host = '192.168.0.14'  # Localhost 192.168.0.14	10.102.13.212
@@ -37,9 +49,12 @@ while True:
         "Temperature": temperature,
         "CPU_Speed": cpu_speed,
         "GPU_Speed": gpu_speed,
-        "Memory_Info": memory_info,
+        "Used_Memory": memory_info['used_memory'],
+        "Total_Memory": memory_info['total_memory'],
     }
 
-    res = bytes(json.dumps(data), 'utf-8')  # convert the dictionary to a JSON-encoded string and encode it to bytes
-    c.send(res)
+    for key, value in data.items():
+        res = bytes(json.dumps({key: value}), 'utf-8')  # convert the dictionary to a JSON-encoded string and encode it to bytes
+        c.send(res)
+        
     c.close()
